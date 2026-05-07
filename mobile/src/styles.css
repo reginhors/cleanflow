@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gom-green: #0E7C3A;
+  --color-gom-green-dark: #0A5C2B;
+  --color-gom-blue: #0B4F8A;
+}
+
+/* Grote tap-targets ≥ 48px (toegankelijkheid op de vloer) */
+button, [role="button"] { min-height: 48px; }
+
+/* Hoog contrast bij focus voor handschoen-gebruik */
+button:focus-visible { outline: 3px solid var(--color-gom-green); outline-offset: 2px; }
