@@ -1,65 +1,130 @@
-# Juridische en ethische aspecten
+# Ethics, Privacy and GDPR Considerations
 
-Dit document is bedoeld voor het HBO-verslag en een latere bespreking met privacy officer, FG en OR. Het is geen juridisch advies, maar legt vast welke keuzes in het concept privacy-by-design ondersteunen.
+## Status note
 
-## Conclusie voor de MVP
+This document describes the ethical and privacy considerations behind the Smart Cleaning Operations concept.  
+It is **not legal advice**. A real pilot or production deployment would require formal review by Facilicom/GOM, including privacy, legal and employee-representation stakeholders where applicable.
 
-De basisrichting klopt: de app zegt duidelijk dat data voor procesverbetering is, niet voor individuele beoordeling. Er zijn ook goede ontwerpkeuzes: geen GPS-tracking, geen automatische sancties, korte bewaartermijn op individueel niveau, en het uitgangspunt dat managers alleen aggregaten zien.
+## Core principle
 
-Er waren wel twee punten die verduidelijking nodig hadden:
+> **AI should support cleaners, not monitor them.**
 
-1. Het managementdashboard toonde in de concept-preview individuele prestatiegegevens. Dat botst met het uitgangspunt "geen individuele ranglijsten". De preview is daarom aangepast: prestaties worden als teamgemiddelde/afgeschermd concept getoond.
-2. De documentatie noemde waarborgen die nog niet technisch bestaan, zoals API-guards en anonimiseringjobs. Die blijven belangrijk, maar moeten duidelijk als "vereist voor productie" worden beschreven.
+Smart Cleaning Operations is designed as a decision-support tool for cleaning staff.  
+The concept aims to improve cleaning operations without turning the app into an employee-surveillance system.
 
-## Relevante kaders
+## Main ethical design choices
 
-| Thema | Betekenis voor deze app | Ontwerpkeuze |
+### 1. No GPS tracking
+
+The concept does not use GPS or background location tracking.  
+This reduces unnecessary monitoring and keeps the focus on cleaning tasks rather than employee movement.
+
+### 2. No individual ranking by default
+
+Managers should receive aggregated process insights by default, not leaderboards or individual performance rankings.  
+The purpose of the system is operational improvement, not individual scoring.
+
+### 3. Explainable recommendations
+
+Route suggestions should be shown as understandable recommendations with reasons, such as:
+- room demand,
+- service request,
+- or time since last cleaning.
+
+The system should not make hidden or automatic decisions that users cannot understand.
+
+### 4. Human-in-the-loop
+
+Cleaners and supervisors remain responsible for final decisions.  
+AI suggestions should support human judgment, not replace it.
+
+### 5. Data minimization
+
+Only data that is necessary for planning, execution and process improvement should be collected.  
+The concept avoids unnecessary personal, behavioral or location data.
+
+## Relevant privacy principles
+
+| Principle | Meaning for this project | Design implication |
 |---|---|---|
-| AVG-beginselen | Persoonsgegevens moeten rechtmatig, transparant, doelgebonden en minimaal worden verwerkt. | Alleen gegevens tonen die nodig zijn voor planning, uitvoering en procesverbetering. |
-| Transparantie | Medewerkers moeten begrijpen welke data wordt vastgelegd en waarom. | "Wat meten we?"-scherm in de mobiele app. |
-| Dataminimalisatie | Geen onnodige locatie-, gedrags- of prestatiegegevens. | Geen GPS, geen background tracking, geen individuele ranglijsten. |
-| Bewaarbeperking | Individuele herleidbaarheid moet niet langer blijven dan nodig. | Concept: 90 dagen op individueel niveau, daarna anonimiseren of loskoppelen van `user_id`. |
-| Rechten van betrokkenen | Medewerkers moeten inzage en verwijdering/correctie kunnen aanvragen. | Knop "Mijn gegevens inzien of verwijderen"; in productie een echte aanvraagflow. |
-| DPIA | Bij monitoring van werknemers en systematische analyse is een DPIA waarschijnlijk nodig voor productie. | DPIA uitvoeren voor pilot/productie, inclusief belangenafweging en risico-reductie. |
-| OR-instemming | Bij gebruik van personeelsgegevens en monitoring/volgsystemen heeft de OR een instemmingsrol. | Individuele inzichten standaard uit; alleen met OR-instemming, doelregistratie en audit-log. |
+| Lawfulness, fairness and transparency | People should understand what data is collected and why. | The app includes a “What do we measure?” screen in plain language. |
+| Purpose limitation | Data should be collected for specific purposes only. | Data is intended for cleaning operations and process improvement, not unrelated employee evaluation. |
+| Data minimization | Only necessary data should be collected. | No GPS tracking, no background tracking, no unnecessary personal data. |
+| Storage limitation | Data should not be kept longer than necessary. | Future deployment requires defined retention periods and deletion or review rules. |
+| Accuracy and reliability | Data used for decisions should be sufficiently reliable. | Real deployment requires validated operational data before optimization claims are made. |
+| Security and confidentiality | Personal data requires appropriate safeguards. | Future systems need role-based access, audit logging and technical security controls. |
 
-## Wat de app wel mag tonen in het concept
+## What the concept may show
 
-- Teamvoortgang: aantal ruimtes klaar, open meldingen, totale teamstatus.
-- Ruimte- en vleugelinformatie: demand-score, prioriteit en schoonmaakstatus.
-- Geaggregeerde procesprestaties: gemiddelde doorlooptijd, normafwijking, trend op teamniveau.
-- Meldingen per ruimte, zolang die niet standaard aan individuele medewerkers worden gekoppeld.
-- AI-routeadvies als uitlegbare suggestie, niet als automatische beoordeling.
+The concept may appropriately show:
+- daily tasks,
+- room priorities,
+- room status,
+- service requests,
+- team-level progress,
+- and aggregated process insights.
 
-## Wat de app niet moet tonen zonder extra besluitvorming
+## What the concept should not show by default
 
-- Ranglijsten met "beste" of "snelste" medewerkers.
-- Individuele tijden, pauzes, afwijkingen of trends per medewerker.
-- Huidige kamer/starttijd per medewerker voor managers, tenzij strikt noodzakelijk voor operationele veiligheid en apart onderbouwd.
-- Automatische conclusies over functioneren, inzetbaarheid of productiviteit.
-- GPS, background tracking of privételefoon-monitoring.
+The concept should not show:
+- individual employee rankings,
+- “fastest cleaner” or “best cleaner” leaderboards,
+- individual pause patterns,
+- automatic judgments about productivity,
+- GPS movement traces,
+- or background monitoring data.
 
-## Productie-eisen
+## Employee transparency in the prototype
 
-Voor een echte pilot/productiegang moeten deze punten nog expliciet geregeld worden:
+The mobile app includes a transparency screen that explains:
+- what data is measured,
+- why it is measured,
+- that the goal is process improvement,
+- and that individual figures are not visible to managers by default.
 
-1. DPIA uitvoeren en opnemen in het dossier.
-2. Verwerkingsregister invullen: doelen, categorieën data, bewaartermijnen, ontvangers en beveiliging.
-3. OR/medezeggenschap betrekken voordat monitoring of individuele inzichten worden gebruikt.
-4. Autorisatie afdwingen in de backend, niet alleen in de UI.
-5. Audit-log schrijven voor elke inzage in individuele medewerkerdata.
-6. Anonimisering of loskoppeling na de afgesproken bewaartermijn technisch afdwingen.
-7. Inzage-, correctie- en verwijderverzoeken echt afhandelen.
-8. AI-assistent beperken tot schoonmaakadvies en gevaarlijke chemische combinaties blokkeren.
+This makes responsible AI visible in the product itself rather than only in documentation.
 
-## Beslisregel voor nieuwe features
+## Risks and mitigations
 
-Voor elke nieuwe feature die werknemerdata toont:
+| Risk | Why it matters | Mitigation in the concept |
+|---|---|---|
+| Employee surveillance | Staff could feel monitored rather than supported. | No GPS, no background tracking, no individual ranking by default. |
+| Unclear data ownership | Building or client data may not automatically be available for reuse. | Future pilot requires legal review and confirmation of permitted data use. |
+| Poor data quality | Incomplete data could create unfair or unreliable recommendations. | Current prototype uses dummy data only; real deployment requires validated data. |
+| Over-reliance on AI | Users may assume recommendations are always correct. | AI remains advisory, explainable and human-reviewed. |
+| Function creep | Data collected for operations could later be reused for other purposes. | Purpose limitation and governance must be defined before deployment. |
 
-1. Kan dit op team- of ruimteniveau?
-2. Is de groep groot genoeg om herleidbaarheid te voorkomen, bijvoorbeeld minimum N=3?
-3. Is individuele weergave noodzakelijk voor een concreet operationeel doel?
-4. Is OR-instemming of andere medezeggenschap geregeld?
-5. Wordt inzage gelogd met doel, kijker en tijdstip?
+## Requirements before a real pilot
 
-Alleen als 3, 4 en 5 overtuigend ja zijn, mag individuele data zichtbaar worden. Anders blijft het geaggregeerd.
+Before a real pilot or production deployment, Facilicom/GOM should:
+
+1. confirm which data may legally be collected and used;
+2. define clear purposes for data processing;
+3. perform the required privacy and legal assessment;
+4. involve relevant employee-representation stakeholders where required;
+5. define retention periods and deletion rules;
+6. implement role-based access control and audit logging;
+7. validate data quality and model behavior;
+8. test usability, trust and practical workflow fit with cleaners and managers.
+
+## Decision rule for future features
+
+For every future feature that uses employee-related data, ask:
+
+1. Is the data necessary for the cleaning purpose?
+2. Can the goal be achieved with aggregated or room-level data instead?
+3. Is the feature understandable to affected employees?
+4. Has the legal and organizational basis been confirmed?
+5. Does the feature preserve human oversight?
+
+If the answer is unclear, the feature should not be deployed until it has been reviewed.
+
+## Current conclusion
+
+The current prototype is ethically stronger because it:
+- avoids unnecessary employee monitoring,
+- makes data use transparent,
+- keeps humans in control,
+- and clearly separates concept demonstration from real deployment claims.
+
+The main unresolved issue is not technical complexity alone, but whether Facilicom/GOM can establish the right data, governance and trust conditions for a responsible pilot.
