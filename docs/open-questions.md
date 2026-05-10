@@ -24,3 +24,9 @@ Punten die ik in de MVP gemaakt heb maar die je met Facilicom-stakeholders moet 
 - Native iOS/Android-app (PWA volstaat)
 - BIM-koppeling
 - Klanten-portal (alleen FM-rol bij klant ziet dashboard, geen aparte klanten-UI)
+
+## Juridisch te bevestigen voor pilot
+- Wie is eigenaar van de DPIA, verwerkingsregister-update en privacyverklaring?
+- Is de OR of personeelsvertegenwoordiging betrokken voordat de pilot live gaat?
+- Blijven individuele prestatie-inzichten volledig buiten scope van de MVP?
+- Is minimum-N=3 voldoende voor de gekozen pilotomvang, of is N=5 passender bij kleine teams?

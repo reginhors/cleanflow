@@ -2,7 +2,7 @@
 
 ## Principes
 1. **Offline-first op de vloer.** De mobiele app moet bruikbaar blijven in technische ruimtes zonder wifi. Lokale write-ahead log (IndexedDB) → sync zodra connectie terug is. Conflict-resolutie: server-wint op tijdsegmenten, client-wint op vrije tekst/foto's.
-2. **Privacy by design.** Individuele medewerker-data is *standaard* onzichtbaar voor managers. Aggregatie is de default; individu is een uitzondering die expliciet aangezet moet worden, met audit-log en banner.
+2. **Privacy by design.** Individuele medewerker-data is *standaard* onzichtbaar voor managers. Aggregatie is de default; individu is een uitzondering die pas na DPIA, OR/medezeggenschap en audit-log overwogen mag worden.
 3. **Doelbinding hard ingebakken.** Elke endpoint dat individuele data teruggeeft, controleert een `individual_insights_enabled` feature flag + rol + audit-write. Niet als config op de UI maar als guard in de API.
 4. **Twee data-werelden.** Operationele data (taken, timers, meldingen) is realtime en kort-bewaard. Sensor/demand-data is tijdreeks en statistisch. Niet vermengen in één tabel.
 
@@ -17,7 +17,7 @@
 ### Dashboard
 - React + Tailwind + shadcn/ui.
 - Plattegrond als SVG met `data-room-id` hooks → live kleurstatus via WebSocket.
-- Geen individuele timing-tabel zichtbaar tenzij toggle "individuele inzichten" actief is (zie ethiek).
+- Geen individuele timing-, pauze- of prestatietabel in de MVP. Dashboardinformatie blijft op ruimte-, vleugel- of teamniveau.
 
 ### Backend
 - Node.js 20 + Express + Socket.IO.
@@ -33,7 +33,7 @@
 
 ## Realtime
 WebSocket-channels:
-- `room:{id}` — status (idle/cleaning/done) en huidige medewerker (alleen zichtbaar voor rollen die individu mogen zien)
+- `room:{id}` — status (idle/cleaning/done). Huidige medewerker niet standaard meesturen naar managementclients.
 - `building:{id}:complaints` — nieuwe meldingen
 - `building:{id}:demand` — score-updates uit Insights-feed
 

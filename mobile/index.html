@@ -73,7 +73,7 @@ const dict = {
     optimizedSub:'Geschatte tijdwinst: 8 minuten',
     reset:'Originele volgorde',
     now:'Nu', shift:'Dienst', clockedIn:'Ingeklokt', remaining:'Resterend',
-    avgSat:'Gem. tevredenheid', shiftWindow:'Werktijd',
+    avgSat:'Gem. aangetroffen staat', shiftWindow:'Werktijd',
     cartTitle:'Benodigdheden voor je kar',
     cartSub:'AI-suggestie op basis van vandaag',
     cartShow:'Bekijken', cartHide:'Verbergen', cartItems:'items',
@@ -116,7 +116,7 @@ const dict = {
     optimizedSub:'Estimated time saved: 8 minutes',
     reset:'Original order',
     now:'Now', shift:'Shift', clockedIn:'Clocked in', remaining:'Remaining',
-    avgSat:'Avg. satisfaction', shiftWindow:'Shift window',
+    avgSat:'Avg. room condition', shiftWindow:'Shift window',
     cartTitle:'Supplies for your cart',
     cartSub:"AI suggestion based on today's rooms",
     cartShow:'Show', cartHide:'Hide', cartItems:'items',
@@ -157,8 +157,6 @@ const IC = {
   camera:     e(Icon, { d:'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z' }),
   logout:     e(Icon, { d:'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9' }),
   wifiOff:    e(Icon, { d:'M1 1l22 22M16.7 16.7A6 6 0 0 0 12 14a6 6 0 0 0-3 .8M5 12.5a10 10 0 0 1 5-2.4M19 12.5a10 10 0 0 0-3-2.1M12 20h.01' }),
-  sun:         e(Icon, { d:'M12 4V2M12 22v-2M4.93 4.93 3.52 3.52M20.48 20.48l-1.41-1.41M4 12H2M22 12h-2M4.93 19.07l-1.41 1.41M20.48 3.52l-1.41 1.41M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0' }),
-  moon:        e(Icon, { d:'M21 12.8A8.5 8.5 0 1 1 11.2 3a6.8 6.8 0 0 0 9.8 9.8z' }),
   sparkle:    e(Icon, { d:'M12 3l1.8 4.7L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.3z' }),
   chevronRight: e(Icon, { d:'M9 6l6 6-6 6' }),
   chevronDown: e(Icon, { d:'M6 9l6 6 6-6' }),
@@ -247,17 +245,10 @@ function Login({ onLoggedIn, onManager }) {
   const [code, setCode] = useState('1001');
   const [pin, setPin] = useState('');
   const [error, setError] = useState(null);
-  const [theme, setTheme] = useState(() => localStorage.getItem('loginTheme') || 'light');
-  const dark = theme === 'dark';
   const press = (d) => {
     if (d === '⌫') return setPin(p => p.slice(0, -1));
     if (pin.length < 6) setPin(p => p + d);
   };
-  useEffect(() => {
-    localStorage.setItem('loginTheme', theme);
-    document.body.style.background = dark ? '#020617' : '#f6f7f9';
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#020617' : '#0E7C3A');
-  }, [theme, dark]);
   useEffect(() => {
     if (pin.length === 6) {
       if (pin === '123456' && code === '1001') onLoggedIn();
@@ -265,43 +256,36 @@ function Login({ onLoggedIn, onManager }) {
     }
   }, [pin]); // eslint-disable-line
 
-  return e('main', { className:`min-h-full p-6 pt-10 flex flex-col max-w-md mx-auto transition-colors ${dark ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}` },
+  return e('main', { className:'min-h-full p-6 pt-10 flex flex-col bg-white text-slate-900 max-w-md mx-auto' },
     e('div', { className:'flex justify-between items-center mb-2' },
       e('button', {
         onClick: onManager,
-        className:`inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-3 py-1.5 transition ${dark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'}`,
+        className:'inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-full px-3 py-1.5 transition',
         style:{ minHeight:32 }
       }, IC.shield, t('mgrLink')),
       e('div', { className:'flex gap-1' },
-        e('button', {
-          onClick:()=>setTheme(dark ? 'light' : 'dark'),
-          title: dark ? 'Light mode' : 'Dark mode',
-          'aria-label': dark ? 'Schakel naar light mode' : 'Schakel naar dark mode',
-          className:`inline-flex items-center justify-center rounded-full w-9 transition ${dark ? 'bg-slate-800 text-amber-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'}`,
-          style:{ minHeight:32 }
-        }, dark ? IC.sun : IC.moon),
         ['nl','en'].map(l => e('button', { key:l, onClick:()=>setLocale(l), style:{ minHeight:32 },
-          className: `text-xs font-semibold px-3 rounded-full transition ${locale===l ? (dark ? 'bg-emerald-900/60 text-emerald-200' : 'bg-gom-greenSoft text-gom-green') : (dark ? 'text-slate-500 hover:text-slate-200' : 'text-slate-400 hover:text-slate-700')}` }, l.toUpperCase()))
+          className: `text-xs font-semibold px-3 rounded-full transition ${locale===l ? 'bg-gom-greenSoft text-gom-green' : 'text-slate-400 hover:text-slate-700'}` }, l.toUpperCase()))
       )
     ),
     e('div', { className:'flex flex-col items-center mt-10 mb-8' },
-      e('div', { className:`w-14 h-14 rounded-2xl bg-gom-green flex items-center justify-center text-white font-extrabold text-2xl shadow-md ${dark ? 'shadow-emerald-950/60' : 'shadow-emerald-200'}` }, 'G'),
-      e('h1', { className:`text-[22px] font-bold mt-4 tracking-tight ${dark ? 'text-white' : 'text-slate-900'}` }, t('appTitle')),
-      e('p',  { className:`text-[13px] mt-1 ${dark ? 'text-slate-400' : 'text-slate-500'}` }, t('loginSub'))
+      e('div', { className:'w-14 h-14 rounded-2xl bg-gom-green flex items-center justify-center text-white font-extrabold text-2xl shadow-md shadow-emerald-200' }, 'G'),
+      e('h1', { className:'text-[22px] font-bold text-slate-900 mt-4 tracking-tight' }, t('appTitle')),
+      e('p',  { className:'text-slate-500 text-[13px] mt-1' }, t('loginSub'))
     ),
 
     e('label', { className:'block mb-3' },
-      e('span', { className:`text-[11px] font-semibold uppercase tracking-wider ${dark ? 'text-slate-400' : 'text-slate-500'}` }, t('employeeCode')),
+      e('span', { className:'text-[11px] font-semibold text-slate-500 uppercase tracking-wider' }, t('employeeCode')),
       e('input', {
         value: code, inputMode:'numeric',
         onChange:(ev)=>setCode(ev.target.value.replace(/\D/g,'').slice(0,6)),
-        className:`mt-1.5 w-full text-center text-2xl tracking-widest font-semibold rounded-xl border py-3 outline-none transition ${dark ? 'border-slate-700 bg-slate-900 text-white focus:bg-slate-900 focus:border-gom-green' : 'border-slate-200 bg-slate-50 text-slate-900 focus:bg-white focus:border-gom-green'}`
+        className:'mt-1.5 w-full text-center text-2xl tracking-widest font-semibold rounded-xl border border-slate-200 bg-slate-50 text-slate-900 py-3 focus:bg-white focus:border-gom-green outline-none transition'
       })
     ),
 
     e('div', { className:'flex justify-center gap-2.5 my-4' },
       Array.from({length:6}).map((_,i) =>
-        e('div', { key:i, className:`w-3 h-3 rounded-full transition ${i<pin.length ? 'bg-gom-green' : (dark ? 'bg-slate-700' : 'bg-slate-200')}` })
+        e('div', { key:i, className:`w-3 h-3 rounded-full transition ${i<pin.length ? 'bg-gom-green' : 'bg-slate-200'}` })
       )
     ),
 
@@ -310,7 +294,7 @@ function Login({ onLoggedIn, onManager }) {
         d === ''
           ? e('div', { key:i })
           : e('button', { key:i, onClick:()=>press(d),
-              className:`border rounded-xl text-2xl font-medium py-4 transition ${dark ? 'bg-slate-900 border-slate-700 text-white active:bg-slate-800 hover:border-slate-500' : 'bg-white border-slate-200 text-slate-900 active:bg-slate-50 hover:border-slate-300'}` }, d)
+              className:'bg-white border border-slate-200 rounded-xl text-2xl font-medium text-slate-900 py-4 active:bg-slate-50 hover:border-slate-300 transition' }, d)
       )
     ),
 
@@ -475,9 +459,9 @@ const FAKE_ROOMS = [
   { code:'D.2.01', wing:'D', x: 40, y:110, status:'pending',     type:'classroom' },
 ];
 const FAKE_CLEANERS = [
-  { name:'Fatima', code:'1001', currentRoom:'A.1.05', startedAt:'10:12', initials:'F' },
-  { name:'Piotr',  code:'1002', currentRoom:'B.2.02', startedAt:'10:18', initials:'P' },
-  { name:'Anouk',  code:'1003', currentRoom:'C.2.01', startedAt:'09:55', initials:'A' },
+  { name:'Hidden', code:'team-1', currentRoom:'details hidden', startedAt:'n/a', initials:'?' },
+  { name:'Hidden', code:'team-2', currentRoom:'details hidden', startedAt:'n/a', initials:'?' },
+  { name:'Hidden', code:'team-3', currentRoom:'details hidden', startedAt:'n/a', initials:'?' },
 ];
 const FAKE_ISSUES = [
   { id:'i1', room:'A.1.05', cat:'damage',    text:'Verstopte WC',          time:'10:24', severity:'high' },
@@ -492,6 +476,7 @@ const STATUS_COLOR = {
 };
 
 function FloorPlan() {
+  const mt = useMgmtText();
   const groups = ['A','B','C','D'].map(w => ({
     wing: w, rooms: FAKE_ROOMS.filter(r => r.wing === w)
   }));
@@ -507,7 +492,7 @@ function FloorPlan() {
         ...Object.entries(STATUS_COLOR).map(([k, v]) =>
           e('span', { key:k, className:'inline-flex items-center gap-1.5' },
             e('span', { className:'w-2.5 h-2.5 rounded-sm', style:{ background: v.fill } }),
-            v.label
+            k === 'done' ? mt('ready') : k === 'in_progress' ? mt('busy') : mt('pending')
           )
         )
       )
@@ -517,7 +502,7 @@ function FloorPlan() {
       groups.map(({ wing, rooms }) =>
         e('div', { key:wing, className:'border border-slate-200 rounded-xl p-3 bg-slate-50/50' },
           e('div', { className:'flex items-center justify-between mb-2' },
-            e('span', { className:'text-[11px] font-bold text-slate-400 uppercase tracking-wider' }, 'Vleugel'),
+            e('span', { className:'text-[11px] font-bold text-slate-400 uppercase tracking-wider' }, mt('wing')),
             e('span', { className:'text-2xl font-extrabold text-slate-900' }, wing)
           ),
           e('svg', { viewBox:'0 0 280 180', className:'w-full' },
@@ -564,7 +549,68 @@ const LOCATIONS = [
   { id:'albeda',         name:'Pilot Albeda Rotterdam', client:'Albeda College',       rooms: 45, wings:2 },
 ];
 
+const MGMT_TEXT = {
+  nl: {
+    location:'Locatie', locations:'locaties', rooms:'ruimtes', wings:'vleugels',
+    live:'Live overzicht', demand:'Cleaning Demand', history:'Historie', performance:'Prestaties', issues:'Meldingen',
+    logout:'Uitloggen', ready:'Klaar', busy:'Bezig', pending:'Te doen',
+    roomsDone:'Ruimtes klaar', activeRooms:'Bezig', openIssues:'Open meldingen', activeEmployees:'Actieve medewerkers',
+    onLocation:'Op locatie', today:'Vandaag', liveExecution:'Live in uitvoering',
+    floorTitle:'Plattegrond - HR Kralingse Zoom', floorSub:'Live status per ruimte, vier vleugels',
+    wing:'Vleugel', teamStatus:'Teamstatus', employeeActive:'Medewerker actief', shielded:'Op locatie - details afgeschermd',
+    demandTitle:'Cleaning Demand', demandSub:'Actuele dummy-score per vleugel en ruimte, gekoppeld aan mock sensordata.',
+    wip:'WORK IN PROGRESS', dummy:'Dummy data', dataNeeded:'Sensorfeed uit Smart Cleaning Insights moet nog worden opgehaald en gevalideerd.',
+    avgDemand:'Gem. demand', highDemand:'Hoge vraag', sensorFresh:'Sensorfeed', roomsMeasured:'Gemeten ruimtes',
+    co2:'CO2', occupancy:'Bezetting', complaints:'Meldingen', lastClean:'Laatst schoon', advice:'Advies',
+    historyTitle:'Historie & trends', historySub:'Piekpunten en dalingen per periode, geaggregeerd over ruimtes.',
+    period:'Periode', day:'Dag', week:'Week', month:'Maand', peak:'Piekpunt', dip:'Daling', trendNote:'Conceptlijn met dummy data; echte historische data moet nog worden gekoppeld.',
+    perfTitle:'Procesprestaties', perfSub:'Functioneel, maar ethisch: alleen team- en ruimteniveau, geen medewerkervergelijking.',
+    withinNorm:'Binnen norm', avgTime:'Gem. tijd/ruimte', routeGain:'Routewinst', workload:'Werkdruk',
+    privacyGuard:'Privacygrens', privacyGuardText:'Geen individuele tijden, pauzes, ranglijsten of productiviteitsscores in deze MVP.',
+    issueTitle:'Alle meldingen', issueSub:'open - ingestuurd via mobiele app', thisWeek:'Deze week', thisMonth:'Deze maand', previous:'Vorige periode',
+    time:'Tijd', room:'Ruimte', category:'Categorie', description:'Omschrijving', priority:'Prioriteit', action:'Actie',
+    high:'Hoog', medium:'Middel', low:'Laag', handle:'Behandelen'
+  },
+  en: {
+    location:'Location', locations:'locations', rooms:'rooms', wings:'wings',
+    live:'Live overview', demand:'Cleaning Demand', history:'History', performance:'Performance', issues:'Issues',
+    logout:'Sign out', ready:'Done', busy:'In progress', pending:'To do',
+    roomsDone:'Rooms done', activeRooms:'In progress', openIssues:'Open issues', activeEmployees:'Active employees',
+    onLocation:'On site', today:'Today', liveExecution:'Live in progress',
+    floorTitle:'Floor plan - HR Kralingse Zoom', floorSub:'Live room status, four wings',
+    wing:'Wing', teamStatus:'Team status', employeeActive:'Employee active', shielded:'On site - details hidden',
+    demandTitle:'Cleaning Demand', demandSub:'Current dummy score per wing and room, linked to mock sensor data.',
+    wip:'WORK IN PROGRESS', dummy:'Dummy data', dataNeeded:'Sensor feed from Smart Cleaning Insights still needs to be retrieved and validated.',
+    avgDemand:'Avg. demand', highDemand:'High demand', sensorFresh:'Sensor feed', roomsMeasured:'Measured rooms',
+    co2:'CO2', occupancy:'Occupancy', complaints:'Issues', lastClean:'Last cleaned', advice:'Advice',
+    historyTitle:'History & trends', historySub:'Peaks and dips per period, aggregated across rooms.',
+    period:'Period', day:'Day', week:'Week', month:'Month', peak:'Peak', dip:'Dip', trendNote:'Concept line with dummy data; real historical data still needs to be connected.',
+    perfTitle:'Process performance', perfSub:'Useful but ethical: team and room level only, no employee comparison.',
+    withinNorm:'Within norm', avgTime:'Avg. time/room', routeGain:'Route gain', workload:'Workload',
+    privacyGuard:'Privacy boundary', privacyGuardText:'No individual times, breaks, rankings or productivity scores in this MVP.',
+    issueTitle:'All issues', issueSub:'open - submitted through the mobile app', thisWeek:'This week', thisMonth:'This month', previous:'Previous period',
+    time:'Time', room:'Room', category:'Category', description:'Description', priority:'Priority', action:'Action',
+    high:'High', medium:'Medium', low:'Low', handle:'Handle'
+  }
+};
+
+function useMgmtText() {
+  const { locale } = useI18n();
+  return (key) => MGMT_TEXT[locale]?.[key] || MGMT_TEXT.nl[key] || key;
+}
+
+function LanguageSwitch({ className='' }) {
+  const { locale, setLocale } = useI18n();
+  return e('div', { className:`inline-flex gap-1 bg-slate-100 rounded-full p-1 ${className}` },
+    ['nl','en'].map(l => e('button', { key:l, onClick:()=>setLocale(l), style:{ minHeight:32 },
+      className:`text-xs font-semibold px-3 rounded-full transition ${locale===l ? 'bg-white text-gom-green shadow-sm' : 'text-slate-500 hover:text-slate-900'}` },
+      l.toUpperCase()
+    ))
+  );
+}
+
 function LocationSwitcher({ value, onChange }) {
+  const mt = useMgmtText();
   const [open, setOpen] = useState(false);
   const current = LOCATIONS.find(l => l.id === value) || LOCATIONS[0];
   return e('div', { className:'relative' },
@@ -574,14 +620,14 @@ function LocationSwitcher({ value, onChange }) {
       style:{ minHeight:'auto' }
     },
       e('div', { className:'text-left' },
-        e('p', { className:'text-[11px] font-semibold text-slate-400 uppercase tracking-wider' }, 'Locatie'),
+        e('p', { className:'text-[11px] font-semibold text-slate-400 uppercase tracking-wider' }, mt('location')),
         e('p', { className:'text-[15px] font-semibold text-slate-900' }, current.name)
       ),
       e('span', { className:`text-slate-400 transition-transform ${open?'rotate-180':''}` }, IC.chevronDown)
     ),
     open && e('div', { className:'absolute left-0 top-full mt-1 w-80 bg-white border border-slate-200 rounded-xl shadow-lg z-30 overflow-hidden' },
       e('div', { className:'px-3 py-2 border-b border-slate-100 text-[10px] font-semibold text-slate-400 uppercase tracking-wider' },
-        LOCATIONS.length + ' locaties'
+        LOCATIONS.length + ' ' + mt('locations')
       ),
       e('ul', null,
         LOCATIONS.map(loc =>
@@ -605,6 +651,8 @@ function LocationSwitcher({ value, onChange }) {
 }
 
 function ManagementDashboard({ onLogout }) {
+  const mt = useMgmtText();
+  const { locale } = useI18n();
   const [tab, setTab] = useState('live');
   const [location, setLocation] = useState('kralingse-zoom');
   const [now, setNow] = useState(() => new Date());
@@ -619,12 +667,11 @@ function ManagementDashboard({ onLogout }) {
   const openIssues = FAKE_ISSUES.length;
 
   const navItems = [
-    { id:'live',         label:'Live overzicht',     icon:'home' },
-    { id:'demand',       label:'Cleaning Demand',    icon:'sparkle' },
-    { id:'history',      label:'Historie',           icon:'chart' },
-    { id:'team',         label:'Team-inzichten',     icon:'shield' },
-    { id:'performance',  label:'Prestaties',         icon:'chart' },
-    { id:'issues',       label:'Meldingen',          icon:'message' },
+    { id:'live',         label:mt('live'),        icon:'home' },
+    { id:'demand',       label:mt('demand'),      icon:'sparkle' },
+    { id:'history',      label:mt('history'),     icon:'chart' },
+    { id:'performance',  label:mt('performance'), icon:'chart' },
+    { id:'issues',       label:mt('issues'),      icon:'message' },
   ];
 
   return e('div', { className:'min-h-screen w-screen bg-slate-100 flex' },
@@ -652,7 +699,7 @@ function ManagementDashboard({ onLogout }) {
         e('button', { onClick: onLogout,
           className:'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-slate-500 hover:bg-slate-50',
           style:{ minHeight:'auto' }
-        }, IC.logout, 'Uitloggen')
+        }, IC.logout, mt('logout'))
       )
     ),
 
@@ -662,6 +709,7 @@ function ManagementDashboard({ onLogout }) {
       e('header', { className:'h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6' },
         e(LocationSwitcher, { value: location, onChange: setLocation }),
         e('div', { className:'flex items-center gap-4' },
+          e(LanguageSwitch),
           e('span', { className:'text-[12px] text-slate-500 num' },
             now.toLocaleDateString('nl-NL',{ weekday:'long', day:'numeric', month:'long' }) + ' · ' +
             String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')
@@ -673,11 +721,10 @@ function ManagementDashboard({ onLogout }) {
       // CONTENT
       e('div', { className:'flex-1 overflow-auto p-6' },
         tab === 'live' ? e(LiveOverview, { totalRooms, doneRooms, inProgress, openIssues }) :
-        tab === 'demand' ? e(StubScreen, { title:'Cleaning Demand', sub:'Per vleugel en ruimte de actuele score, gekoppeld aan sensordata uit Smart Cleaning Insights.' }) :
-        tab === 'history' ? e(HistoryScreen) :
-        tab === 'team' ? e(StubScreen, { title:'Team-inzichten', sub:'Geaggregeerd, minimum N=3. Individuele inzichten alleen met OR-akkoord.' , locked:true }) :
-        tab === 'performance' ? e(PerformanceScreen) :
-        tab === 'issues' ? e(IssuesScreen) : null
+        tab === 'demand' ? e(DemandScreen) :
+        tab === 'history' ? e(TrendHistoryScreen) :
+        tab === 'performance' ? e(EthicalPerformanceScreen) :
+        tab === 'issues' ? e(EnhancedIssuesScreen) : null
       )
     )
   );
@@ -692,28 +739,29 @@ function StatCard({ label, value, sub, accent }) {
 }
 
 function LiveOverview({ totalRooms, doneRooms, inProgress, openIssues }) {
+  const mt = useMgmtText();
   return e('div', { className:'space-y-6' },
     // KPI's
     e('div', { className:'grid grid-cols-4 gap-4' },
-      e(StatCard, { label:'Ruimtes klaar',   value: `${doneRooms}/${totalRooms}`, sub: Math.round(doneRooms/totalRooms*100) + '%' }),
-      e(StatCard, { label:'Bezig',           value: inProgress,                    sub:'Live in uitvoering', accent:'text-blue-600' }),
-      e(StatCard, { label:'Open meldingen',  value: openIssues,                    sub:'Vandaag',           accent:'text-rose-600' }),
-      e(StatCard, { label:'Actieve medewerkers', value: FAKE_CLEANERS.length,     sub:'Op locatie' })
+      e(StatCard, { label:mt('roomsDone'),   value: `${doneRooms}/${totalRooms}`, sub: Math.round(doneRooms/totalRooms*100) + '%' }),
+      e(StatCard, { label:mt('activeRooms'), value: inProgress,                    sub:mt('liveExecution'), accent:'text-blue-600' }),
+      e(StatCard, { label:mt('openIssues'),  value: openIssues,                    sub:mt('today'),         accent:'text-rose-600' }),
+      e(StatCard, { label:mt('activeEmployees'), value: FAKE_CLEANERS.length,     sub:mt('onLocation') })
     ),
 
     // Twee kolommen: plattegrond + zijpanelen
     e('div', { className:'grid grid-cols-3 gap-4' },
       e('div', { className:'col-span-2' }, e(FloorPlan)),
       e('div', { className:'space-y-4' },
-        // Active cleaners
+        // Teamstatus zonder individuele tracking
         e('div', { className:'bg-white border border-slate-200 rounded-2xl p-5' },
-          e('h3', { className:'text-[14px] font-semibold text-slate-900 mb-3' }, 'Actieve medewerkers'),
+          e('h3', { className:'text-[14px] font-semibold text-slate-900 mb-3' }, mt('teamStatus')),
           e('ul', { className:'space-y-2.5' },
             FAKE_CLEANERS.map(c =>
               e('li', { key:c.code, className:'flex items-center gap-3' },
                 e('div', { className:'w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-[13px] font-semibold' }, c.initials),
                 e('div', { className:'flex-1 min-w-0' },
-                  e('p', { className:'text-[13px] font-semibold text-slate-900' }, c.name),
+                  e('p', { className:'text-[13px] font-semibold text-slate-900' }, mt('employeeActive')),
                   e('p', { className:'text-[11px] text-slate-500' }, 'In ' + c.currentRoom + ' · sinds ' + c.startedAt)
                 ),
                 e('span', { className:'w-2 h-2 rounded-full bg-blue-500 animate-pulse' })
@@ -750,6 +798,152 @@ function StubScreen({ title, sub, locked }) {
     e('h2', { className:'text-2xl font-bold text-slate-900 tracking-tight' }, title),
     e('p', { className:'text-[14px] text-slate-500 mt-2 max-w-md mx-auto' }, sub),
     e('p', { className:'text-[11px] text-slate-400 mt-6' }, 'Concept-preview · komt in volgende iteratie')
+  );
+}
+
+const DEMAND_ROOMS = FAKE_ROOMS.map((room, i) => ({
+  ...room,
+  score: [0.82,0.76,0.64,0.41,0.33,0.71,0.58,0.49,0.37,0.55,0.22,0.44,0.61,0.67,0.73,0.39,0.52,0.48][i] || 0.5,
+  co2: [920,880,760,610,590,840,780,730,640,700,520,650,810,860,910,620,690,670][i] || 700,
+  occupancy: [34,28,21,8,6,25,19,14,7,12,3,9,18,23,31,6,11,10][i] || 10,
+  complaints: [1,2,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0][i] || 0,
+  lastClean: ['07:42','08:05','08:18','09:10','09:24','08:40','08:55','09:30','07:58','09:12','10:02','08:45','09:05','09:18','08:30','10:10','09:36','09:50'][i] || '09:00'
+}));
+
+function DemandScreen() {
+  const mt = useMgmtText();
+  const wingStats = ['A','B','C','D'].map(wing => {
+    const rooms = DEMAND_ROOMS.filter(r => r.wing === wing);
+    const avg = rooms.reduce((s, r) => s + r.score, 0) / rooms.length;
+    return { wing, rooms, avg, high: rooms.filter(r => r.score >= 0.7).length };
+  });
+  const avgDemand = wingStats.reduce((s, w) => s + w.avg, 0) / wingStats.length;
+  return e('div', { className:'space-y-4' },
+    e('div', { className:'flex items-start justify-between gap-4' },
+      e('div', null,
+        e('h2', { className:'text-xl font-bold text-slate-900 tracking-tight' }, mt('demandTitle')),
+        e('p', { className:'text-[12px] text-slate-500 mt-1' }, mt('demandSub'))
+      ),
+      e('div', { className:'flex gap-2' },
+        e('span', { className:'text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1' }, mt('wip')),
+        e('span', { className:'text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 rounded-full px-3 py-1' }, mt('dummy'))
+      )
+    ),
+    e('div', { className:'grid grid-cols-4 gap-3' },
+      e(StatCard, { label:mt('avgDemand'), value: Math.round(avgDemand * 100), sub:'0-100 score' }),
+      e(StatCard, { label:mt('highDemand'), value: DEMAND_ROOMS.filter(r => r.score >= 0.7).length, sub:mt('rooms') }),
+      e(StatCard, { label:mt('sensorFresh'), value:'Mock', sub:'CO2 + bezetting' }),
+      e(StatCard, { label:mt('roomsMeasured'), value:DEMAND_ROOMS.length, sub:'Kralingse Zoom' })
+    ),
+    e('div', { className:'bg-white border border-slate-200 rounded-2xl p-5' },
+      e('p', { className:'text-[12px] text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-4' }, mt('dataNeeded')),
+      e('div', { className:'grid grid-cols-4 gap-3 mb-4' },
+        wingStats.map(w => e('div', { key:w.wing, className:'border border-slate-200 rounded-xl p-3 bg-slate-50/70' },
+          e('div', { className:'flex items-center justify-between' },
+            e('p', { className:'text-[11px] font-semibold text-slate-500 uppercase tracking-wider' }, mt('wing') + ' ' + w.wing),
+            e('p', { className:'text-xl font-bold text-slate-900 num' }, Math.round(w.avg * 100))
+          ),
+          e('div', { className:'h-1.5 bg-white rounded-full overflow-hidden mt-3' },
+            e('div', { className:`h-full ${w.avg >= .7 ? 'bg-rose-500' : w.avg >= .5 ? 'bg-amber-500' : 'bg-emerald-500'}`, style:{ width: Math.round(w.avg * 100) + '%' } })
+          ),
+          e('p', { className:'text-[11px] text-slate-500 mt-2' }, w.high + ' ' + mt('highDemand').toLowerCase())
+        ))
+      ),
+      e('table', { className:'w-full text-[13px]' },
+        e('thead', { className:'text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100' },
+          e('tr', null, [mt('room'),'Score',mt('co2'),mt('occupancy'),mt('complaints'),mt('lastClean'),mt('advice')].map(h => e('th', { key:h, className:'py-2 pr-4' }, h)))
+        ),
+        e('tbody', { className:'divide-y divide-slate-100' },
+          DEMAND_ROOMS.map(r => e('tr', { key:r.code, className:'hover:bg-slate-50' },
+            e('td', { className:'py-2 pr-4 font-semibold text-slate-900' }, r.code),
+            e('td', { className:'py-2 pr-4 num font-bold text-slate-900' }, Math.round(r.score * 100)),
+            e('td', { className:'py-2 pr-4 num text-slate-600' }, r.co2 + ' ppm'),
+            e('td', { className:'py-2 pr-4 num text-slate-600' }, r.occupancy),
+            e('td', { className:'py-2 pr-4 num text-slate-600' }, r.complaints),
+            e('td', { className:'py-2 pr-4 num text-slate-600' }, r.lastClean),
+            e('td', { className:'py-2 pr-4 text-slate-700' }, r.score >= .7 ? mt('highDemand') : r.score >= .5 ? 'Monitor' : 'Normaal')
+          ))
+        )
+      )
+    )
+  );
+}
+
+function TrendHistoryScreen() {
+  const mt = useMgmtText();
+  const [period, setPeriod] = useState('week');
+  const series = {
+    day:   [24,31,28,42,38,47,35,29,33,51,44,36],
+    week:  [210,245,238,302,286,340,318,276,255,301,288,260],
+    month: [980,1120,1090,1260,1180,1050,760,720,1410,1500,1320,900]
+  }[period];
+  const labels = period === 'month' ? MONTH_NAMES : series.map((_, i) => period === 'day' ? `${7+i}:00` : 'W' + (i + 1));
+  const max = Math.max(...series), min = Math.min(...series);
+  const peakIdx = series.indexOf(max), dipIdx = series.indexOf(min);
+  const w = 760, h = 260, pad = 34;
+  const points = series.map((v, i) => {
+    const x = pad + i * ((w - pad * 2) / (series.length - 1));
+    const y = pad + (1 - (v - min) / Math.max(1, max - min)) * (h - pad * 2);
+    return { x, y, v, label: labels[i] };
+  });
+  return e('div', { className:'space-y-4' },
+    e('div', { className:'flex items-center justify-between' },
+      e('div', null,
+        e('h2', { className:'text-xl font-bold text-slate-900 tracking-tight' }, mt('historyTitle')),
+        e('p', { className:'text-[12px] text-slate-500 mt-1' }, mt('historySub'))
+      ),
+      e('div', { className:'inline-flex bg-slate-100 rounded-full p-1' },
+        ['day','week','month'].map(p => e('button', { key:p, onClick:()=>setPeriod(p), style:{ minHeight:'auto' },
+          className:`text-[12px] font-semibold px-3.5 py-1.5 rounded-full ${period===p?'bg-white text-slate-900 shadow-sm':'text-slate-500 hover:text-slate-900'}` }, mt(p)))
+      )
+    ),
+    e('div', { className:'grid grid-cols-4 gap-3' },
+      e(StatCard, { label:mt('period'), value:mt(period), sub:'Trend view' }),
+      e(StatCard, { label:mt('peak'), value:max, sub:points[peakIdx].label, accent:'text-rose-600' }),
+      e(StatCard, { label:mt('dip'), value:min, sub:points[dipIdx].label, accent:'text-emerald-600' }),
+      e(StatCard, { label:mt('dummy'), value:'WIP', sub:'Concept' })
+    ),
+    e('div', { className:'bg-white border border-slate-200 rounded-2xl p-5' },
+      e('svg', { viewBox:`0 0 ${w} ${h}`, className:'w-full' },
+        [0,.25,.5,.75,1].map((t,i)=>e('line',{key:i,x1:pad,x2:w-pad,y1:pad+t*(h-pad*2),y2:pad+t*(h-pad*2),stroke:'#E2E8F0',strokeDasharray:i?'4 4':'0'})),
+        e('polyline', { points:points.map(p=>`${p.x},${p.y}`).join(' '), fill:'none', stroke:'#0E7C3A', strokeWidth:4, strokeLinecap:'round', strokeLinejoin:'round' }),
+        points.map((p,i)=>e('g',{key:i},
+          e('circle',{cx:p.x,cy:p.y,r:i===peakIdx||i===dipIdx?6:4,fill:i===peakIdx?'#E11D48':i===dipIdx?'#10B981':'#0E7C3A'}),
+          e('text',{x:p.x,y:h-8,textAnchor:'middle',fontSize:10,fill:'#64748B',fontWeight:600},p.label)
+        ))
+      ),
+      e('p', { className:'text-[12px] text-slate-500 mt-3' }, mt('trendNote'))
+    )
+  );
+}
+
+function EthicalPerformanceScreen() {
+  const mt = useMgmtText();
+  return e('div', { className:'space-y-4' },
+    e('div', null,
+      e('h2', { className:'text-xl font-bold text-slate-900 tracking-tight' }, mt('perfTitle')),
+      e('p', { className:'text-[12px] text-slate-500 mt-1' }, mt('perfSub'))
+    ),
+    e('div', { className:'grid grid-cols-4 gap-3' },
+      e(StatCard, { label:mt('withinNorm'), value:'82%', sub:'Teamaggregaat' }),
+      e(StatCard, { label:mt('avgTime'), value:'12.8 min', sub:'Alle ruimtes' }),
+      e(StatCard, { label:mt('routeGain'), value:'8 min', sub:'AI-suggestie' }),
+      e(StatCard, { label:mt('workload'), value:'Normaal', sub:'Geen individu-score' })
+    ),
+    e('div', { className:'grid grid-cols-3 gap-4' },
+      ['Toiletten','Kantoren','Lokalen'].map((type,i) => e('div', { key:type, className:'bg-white border border-slate-200 rounded-2xl p-5' },
+        e('h3', { className:'font-semibold text-slate-900' }, type),
+        e('p', { className:'text-3xl font-bold text-slate-900 num mt-3' }, [14,9,16][i] + ' min'),
+        e('p', { className:'text-[12px] text-slate-500 mt-1' }, mt('avgTime')),
+        e('div', { className:'h-1.5 bg-slate-100 rounded-full overflow-hidden mt-4' },
+          e('div', { className:'h-full bg-gom-green rounded-full', style:{ width:[78,86,70][i] + '%' } })
+        )
+      ))
+    ),
+    e('div', { className:'bg-white border border-slate-200 rounded-2xl p-5' },
+      e('h3', { className:'text-[15px] font-semibold text-slate-900' }, mt('privacyGuard')),
+      e('p', { className:'text-[13px] text-slate-500 mt-2 leading-relaxed' }, mt('privacyGuardText'))
+    )
   );
 }
 
@@ -1319,6 +1513,54 @@ function IssuesScreen() {
   );
 }
 
+function EnhancedIssuesScreen() {
+  const mt = useMgmtText();
+  const week = 18, month = 64, previous = 51;
+  return e('div', { className:'space-y-4' },
+    e('div', { className:'grid grid-cols-4 gap-3' },
+      e(StatCard, { label:mt('openIssues'), value:FAKE_ISSUES.length, sub:mt('today'), accent:'text-rose-600' }),
+      e(StatCard, { label:mt('thisWeek'), value:week, sub:'+12% ' + mt('previous').toLowerCase() }),
+      e(StatCard, { label:mt('thisMonth'), value:month, sub:'Supply / damage / safety' }),
+      e(StatCard, { label:mt('previous'), value:previous, sub:'baseline' })
+    ),
+    e('div', { className:'bg-white border border-slate-200 rounded-2xl overflow-hidden' },
+      e('div', { className:'p-5 border-b border-slate-100' },
+        e('h2', { className:'text-[15px] font-semibold text-slate-900' }, mt('issueTitle')),
+        e('p', { className:'text-[12px] text-slate-500 mt-0.5' }, FAKE_ISSUES.length + ' ' + mt('issueSub'))
+      ),
+      e('table', { className:'w-full text-[13px]' },
+        e('thead', { className:'bg-slate-50/60 text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wider' },
+          e('tr', null,
+            [mt('time'),mt('room'),mt('category'),mt('description'),mt('priority'),mt('action')].map((h,i) =>
+              e('th', { key:i, className:'px-5 py-2.5' }, h)
+            )
+          )
+        ),
+        e('tbody', { className:'divide-y divide-slate-100' },
+          FAKE_ISSUES.map(i =>
+            e('tr', { key:i.id, className:'hover:bg-slate-50' },
+              e('td', { className:'px-5 py-3 num text-slate-500' }, i.time),
+              e('td', { className:'px-5 py-3 font-semibold text-slate-900' }, i.room),
+              e('td', { className:'px-5 py-3 text-slate-600 capitalize' }, i.cat),
+              e('td', { className:'px-5 py-3 text-slate-700' }, i.text),
+              e('td', { className:'px-5 py-3' },
+                e('span', { className:`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md ${
+                  i.severity==='high'?'bg-rose-50 text-rose-700':
+                  i.severity==='medium'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}` },
+                  i.severity === 'high' ? mt('high') : i.severity === 'medium' ? mt('medium') : mt('low')
+                )
+              ),
+              e('td', { className:'px-5 py-3 text-right' },
+                e('button', { className:'text-[12px] font-semibold text-gom-green hover:text-gom-greenDark', style:{ minHeight:'auto' } }, mt('handle') + ' ->')
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
 function DayPlan({ tasks, onOpen, onLogout, optimized, optimizing, onOptimize, onReset }) {
   const { t } = useI18n();
   const done = tasks.filter(x => x.status==='done' || x.status==='skipped').length;
@@ -1520,7 +1762,10 @@ function RoomDetail({ task, onBack, onComplete }) {
 }
 
 function WhatWeMeasure() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const measuredRows = locale === 'en'
+    ? [['⏱', 'Cleaning time per room'],['💬','Issues you report'],['📊','Observed room condition']]
+    : [['⏱', 'Schoonmaaktijd per ruimte'],['💬','Meldingen die je doorzet'],['📊','Aangetroffen staat van de ruimte']];
   return e('main', { className:'min-h-full pb-24 max-w-md mx-auto' },
     e('header', { className:'px-5 pt-12 pb-5 bg-white border-b border-slate-200/80' },
       e('div', { className:'inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gom-greenSoft text-gom-green mb-3' }, IC.shield),
@@ -1531,7 +1776,7 @@ function WhatWeMeasure() {
       e('div', null,
         e('p', { className:'text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2' }, t('measureWhat')),
         e(Card, { className:'divide-y divide-slate-100' },
-          [['⏱', 'Schoonmaaktijd per ruimte'],['💬','Meldingen die je doorzet'],['📊','Aangetroffen tevredenheid']].map((row,i) =>
+          measuredRows.map((row,i) =>
             e('div', { key:i, className:'flex items-center gap-3 px-4 py-3' },
               e('div', { className:'w-8 h-8 rounded-full bg-gom-greenSoft flex items-center justify-center text-sm' }, row[0]),
               e('p', { className:'text-[14px] text-slate-700' }, row[1])
@@ -1759,14 +2004,17 @@ function App() {
   });
 
   if (activeTask) {
-    return e(RoomDetail, {
-      task: activeTask,
-      onBack: () => setActiveTask(null),
-      onComplete: () => {
-        setTasks(ts => ts.map(t => t.id===activeTask.id ? {...t, status:'done'} : t));
-        setActiveTask(null);
-      }
-    });
+    return e(React.Fragment, null,
+      e('div', { className:'fixed top-2 right-2 z-50' }, e(LanguageSwitch)),
+      e(RoomDetail, {
+        task: activeTask,
+        onBack: () => setActiveTask(null),
+        onComplete: () => {
+          setTasks(ts => ts.map(t => t.id===activeTask.id ? {...t, status:'done'} : t));
+          setActiveTask(null);
+        }
+      })
+    );
   }
 
   const view =
@@ -1781,6 +2029,7 @@ function App() {
     tab === 'measure'   ? e(WhatWeMeasure) : null;
 
   return e(React.Fragment, null,
+    e('div', { className:'fixed top-2 right-12 z-50' }, e(LanguageSwitch)),
     view,
     e(TabBar, { active: tab, onChange: setTab })
   );
