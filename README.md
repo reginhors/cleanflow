@@ -15,7 +15,6 @@ The project started as a broader exploration of how Facilicom could create value
 
 - **Project website / live demo:** https://cleanflow-ai.netlify.app/
 - **Repository:** https://github.com/reginhors/cleanflow
-- **Demo video:** To be added
 
 ## Project goal
 
